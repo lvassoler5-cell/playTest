@@ -89,6 +89,34 @@ button:hover::after { opacity: 1; }
 html, body, div, span, p, h1, h2, h3, h4, h5, h6, label, a, img, button { -webkit-user-select: none !important; user-select: none !important; }
 input, textarea { -webkit-user-select: text !important; user-select: text !important; }
 img { -webkit-user-drag: none; pointer-events: none; }
+
+/* ADICIONANDO COMPATIBILIDADE MOBILE SEM ALTERAR O DESIGN ORIGINAL */
+@media (max-width: 768px) {
+    body { overflow-y: auto; height: auto; min-height: 100vh; }
+    .title, .cards, .glass-bar { display: none; } /* Oculta decorativos que quebram o mobile */
+    .panel { 
+        position: relative; 
+        right: 0; top: 0; 
+        transform: none; 
+        width: 95%; 
+        max-width: 440px; 
+        height: auto; 
+        margin: 80px auto 40px; 
+        padding: 40px 20px; 
+        border-radius: 24px;
+        border-top-right-radius: 24px;
+    }
+    .panel-content { margin-top: 60px; }
+    .panel-content h2 { transform: none; font-size: 32px; margin-bottom: 30px; }
+    button { 
+        width: 100%; 
+        margin-left: 0; 
+        margin-top: 40px; 
+    }
+    .logo img { height: 100px; }
+    #steam-notification { width: 90%; right: -110%; }
+    #steam-notification.show { right: 5%; }
+}
 </style>
 </head>
 
@@ -224,17 +252,33 @@ document.getElementById('btn-join').addEventListener('click', function() {
         } else {
             showSteamNotify("Erro", "Senha incorreta.");
         }
+    // ... (mantenha o restante do código igual)
+
     } else {
-        // CADASTRO DIRETO
-        const newUser = { id: Date.now(), nickname: nick, email: email, password: pass, createdAt: new Date().toLocaleDateString('pt-BR') };
+        // CADASTRO DIRETO COM ID SEQUENCIAL
+        let users = JSON.parse(localStorage.getItem('playu_db') || "[]");
+        
+        // Calcula o próximo ID baseado no tamanho da lista
+        const nextId = users.length + 1;
+
+        const newUser = { 
+            id: nextId, 
+            nickname: nick, 
+            email: email, 
+            password: pass, 
+            createdAt: new Date().toLocaleDateString('pt-BR') 
+        };
+
         users.push(newUser);
         localStorage.setItem('playu_db', JSON.stringify(users));
         localStorage.setItem('playu_logged_in', "true");
         localStorage.setItem('playu_current_user', email);
+        
         showSteamNotify("Bem-vindo", "Redirecionando...");
         setTimeout(() => window.location.href = "inity.html", 1500);
     }
 });
+// ... (mantenha o restante do código igual)
 
 document.getElementById('btn-verify').addEventListener('click', () => {
     const inputCode = document.getElementById('input-code').value.trim();
